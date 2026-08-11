@@ -1,17 +1,14 @@
-C:\Users\Admin\source\repos\Rate Calculation\Rate Calculation\obj\Release\Rate Calculation.csprojResolveAssemblyReference.cache
-C:\Users\Admin\source\repos\Rate Calculation\Rate Calculation\obj\Release\MainWindow.g.cs
-C:\Users\Admin\source\repos\Rate Calculation\Rate Calculation\obj\Release\App.g.cs
-C:\Users\Admin\source\repos\Rate Calculation\Rate Calculation\obj\Release\MainWindow.baml
-C:\Users\Admin\source\repos\Rate Calculation\Rate Calculation\obj\Release\Rate_Calculation.Properties.Resources.resources
-C:\Users\Admin\source\repos\Rate Calculation\Rate Calculation\obj\Release\Rate Calculation.csproj.GenerateResource.Cache
-C:\Users\Admin\source\repos\Rate Calculation\Rate Calculation\bin\ReleaseV2\Rate Calculation.exe.config
-C:\Users\Admin\source\repos\Rate Calculation\Rate Calculation\bin\ReleaseV2\Rate Calculation.exe
-C:\Users\Admin\source\repos\Rate Calculation\Rate Calculation\bin\ReleaseV2\Rate Calculation.pdb
 C:\Users\Admin\source\repos\Rate Calculation\Rate Calculation\bin\Release\Rate Calculation.exe.config
 C:\Users\Admin\source\repos\Rate Calculation\Rate Calculation\bin\Release\Rate Calculation.exe
 C:\Users\Admin\source\repos\Rate Calculation\Rate Calculation\bin\Release\Rate Calculation.pdb
+C:\Users\Admin\source\repos\Rate Calculation\Rate Calculation\obj\Release\Rate Calculation.csprojResolveAssemblyReference.cache
+C:\Users\Admin\source\repos\Rate Calculation\Rate Calculation\obj\Release\MainWindow.g.cs
+C:\Users\Admin\source\repos\Rate Calculation\Rate Calculation\obj\Release\App.g.cs
 C:\Users\Admin\source\repos\Rate Calculation\Rate Calculation\obj\Release\Rate Calculation_MarkupCompile.cache
 C:\Users\Admin\source\repos\Rate Calculation\Rate Calculation\obj\Release\Rate Calculation_MarkupCompile.lref
+C:\Users\Admin\source\repos\Rate Calculation\Rate Calculation\obj\Release\MainWindow.baml
 C:\Users\Admin\source\repos\Rate Calculation\Rate Calculation\obj\Release\Rate Calculation.g.resources
+C:\Users\Admin\source\repos\Rate Calculation\Rate Calculation\obj\Release\Rate_Calculation.Properties.Resources.resources
+C:\Users\Admin\source\repos\Rate Calculation\Rate Calculation\obj\Release\Rate Calculation.csproj.GenerateResource.Cache
 C:\Users\Admin\source\repos\Rate Calculation\Rate Calculation\obj\Release\Rate Calculation.exe
 C:\Users\Admin\source\repos\Rate Calculation\Rate Calculation\obj\Release\Rate Calculation.pdb

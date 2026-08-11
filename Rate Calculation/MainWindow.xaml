@@ -700,14 +700,14 @@
                                                 <ColumnDefinition Width="Auto"/>
                                             </Grid.ColumnDefinitions>
                                             <StackPanel Grid.Column="0">
-                                                <TextBlock Text="{Binding RoundTitle}" FontSize="11" FontWeight="SemiBold" Foreground="White"/>
+                                                <TextBlock Text="{Binding RoundTitle}" FontSize="11" FontWeight="SemiBold" Foreground="White" TextWrapping="Wrap"/>
                                                 <TextBlock Text="{Binding BetDetails}" FontSize="10" Foreground="{StaticResource MutedText}" Margin="0,1,0,0" TextWrapping="Wrap"/>
                                             </StackPanel>
                                             <StackPanel Grid.Column="1" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="8,0,0,0">
                                                 <TextBlock Text="{Binding ProfitDeltaString}" FontSize="13" FontWeight="Bold"
-                                                           Foreground="{Binding ProfitBrush}" HorizontalAlignment="Right" FontFamily="Consolas"/>
+                                                           Foreground="{Binding ProfitBrush}" HorizontalAlignment="Right" FontFamily="Consolas" TextWrapping="Wrap"/>
                                                 <TextBlock Text="{Binding BalanceString}" FontSize="10"
-                                                           Foreground="{StaticResource MutedText}" HorizontalAlignment="Right"/>
+                                                           Foreground="{StaticResource MutedText}" HorizontalAlignment="Right" TextWrapping="Wrap"/>
                                             </StackPanel>
                                         </Grid>
                                     </Border>
