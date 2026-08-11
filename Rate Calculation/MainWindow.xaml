@@ -6,7 +6,8 @@
         xmlns:local="clr-namespace:Rate_Calculation"
         mc:Ignorable="d"
         Title="🎲 Harvard Sic Bo Laboratory" Height="700" Width="840"
-        Background="#1C1C1C" Foreground="#FFFFFF" FontFamily="Segoe UI">
+        Background="#1C1C1C" Foreground="#FFFFFF" FontFamily="Segoe UI"
+        KeyDown="Window_KeyDown">
 
     <Window.Resources>
         <SolidColorBrush x:Key="PanelBg" Color="#2D2D2D"/>
@@ -662,6 +663,7 @@
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto"/>
                             <RowDefinition Height="*"/>
+                            <RowDefinition Height="Auto"/>
                         </Grid.RowDefinitions>
 
                         <DockPanel Grid.Row="0" Margin="0,0,0,8">
@@ -706,6 +708,25 @@
                                 </DataTemplate>
                             </ListBox.ItemTemplate>
                         </ListBox>
+
+                        <!-- Streak Panel (Roadmap) -->
+                        <Border Grid.Row="2" Background="#202020" BorderBrush="{StaticResource BorderColor}" BorderThickness="1" CornerRadius="4" Padding="8,6" Margin="0,6,0,0">
+                            <DockPanel>
+                                <TextBlock Text="Roadmap:" FontSize="10" Foreground="{StaticResource MutedText}" FontWeight="Bold" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                                <ItemsControl x:Name="StreakList">
+                                    <ItemsControl.ItemsPanel>
+                                        <ItemsPanelTemplate>
+                                            <WrapPanel Orientation="Horizontal"/>
+                                        </ItemsPanelTemplate>
+                                    </ItemsControl.ItemsPanel>
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <Ellipse Width="10" Height="10" Fill="{Binding}" Margin="2"/>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </DockPanel>
+                        </Border>
                     </Grid>
                 </Border>
 

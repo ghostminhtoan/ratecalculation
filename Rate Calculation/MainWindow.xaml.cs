@@ -8,6 +8,7 @@ using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Threading.Tasks;
 
 namespace Rate_Calculation
 {
@@ -68,14 +69,17 @@ namespace Rate_Calculation
         private readonly Stack<BetUndoStep> undoStack = new Stack<BetUndoStep>();
 
         public ObservableCollection<HistoryItem> History { get; set; }
+        public ObservableCollection<Brush> Streaks { get; set; }
 
         public MainWindow()
         {
             try
             {
                 History = new ObservableCollection<HistoryItem>();
+                Streaks = new ObservableCollection<Brush>();
                 InitializeComponent();
                 HistoryList.ItemsSource = History;
+                StreakList.ItemsSource = Streaks;
 
                 foreach (string key in PayoutRatios.Keys)
                 {
@@ -271,6 +275,7 @@ namespace Rate_Calculation
 
             betAmounts[key] = betAmounts[key] + currentChip;
             undoStack.Push(new BetUndoStep { BetKey = key, Amount = currentChip });
+            PlaySound(1200, 30);
             UpdateUI();
         }
 
@@ -393,6 +398,28 @@ namespace Rate_Calculation
                                new SolidColorBrush(Color.FromRgb(234, 179, 8));
             History.Insert(0, item);
 
+            // Add to Streak Roadmap
+            SolidColorBrush streakBrush = totalDelta > 0 ? new SolidColorBrush(Color.FromRgb(34, 197, 94)) :
+                                          totalDelta < 0 ? new SolidColorBrush(Color.FromRgb(239, 68, 68)) :
+                                          new SolidColorBrush(Color.FromRgb(234, 179, 8));
+            Streaks.Add(streakBrush);
+            if (Streaks.Count > 18) Streaks.RemoveAt(0);
+
+            // Play resolution sound
+            if (totalDelta > 0)
+            {
+                PlaySound(1000, 100);
+                System.Threading.Tasks.Task.Delay(100).ContinueWith(_ => PlaySound(1500, 150));
+            }
+            else if (totalDelta < 0)
+            {
+                PlaySound(400, 250);
+            }
+            else
+            {
+                PlaySound(800, 150);
+            }
+
             string alertMsg = "";
             if (outcome == "win")
                 alertMsg = string.Format("🏆 Thắng! Tổng lãi +{0:#,##0.##} xu", totalDelta);
@@ -403,6 +430,7 @@ namespace Rate_Calculation
 
             ClearAllBets();
             ShowAlert(alertMsg, outcome);
+            FlashAlertBackground(outcome);
             UpdateUI();
             SaveSession();
         }
@@ -531,11 +559,34 @@ namespace Rate_Calculation
                                new SolidColorBrush(Color.FromRgb(234, 179, 8));
             History.Insert(0, item);
 
+            // Add to Streak Roadmap
+            SolidColorBrush streakBrush = totalDelta > 0 ? new SolidColorBrush(Color.FromRgb(34, 197, 94)) :
+                                          totalDelta < 0 ? new SolidColorBrush(Color.FromRgb(239, 68, 68)) :
+                                          new SolidColorBrush(Color.FromRgb(234, 179, 8));
+            Streaks.Add(streakBrush);
+            if (Streaks.Count > 18) Streaks.RemoveAt(0);
+
+            // Play resolution sound
+            if (totalDelta > 0)
+            {
+                PlaySound(1000, 100);
+                System.Threading.Tasks.Task.Delay(100).ContinueWith(_ => PlaySound(1500, 150));
+            }
+            else if (totalDelta < 0)
+            {
+                PlaySound(400, 250);
+            }
+            else
+            {
+                PlaySound(800, 150);
+            }
+
             string alertMsg = string.Format("⚡ Đã áp dụng kết quả! Tổng lãi/lỗ ván này: {0}{1:#,##0.##} xu", (totalDelta >= 0 ? "+" : ""), totalDelta);
             string alertType = totalDelta > 0 ? "win" : totalDelta < 0 ? "lose" : "draw";
 
             ClearAllBets();
             ShowAlert(alertMsg, alertType);
+            FlashAlertBackground(alertType);
             UpdateUI();
             SaveSession();
         }
@@ -641,6 +692,70 @@ namespace Rate_Calculation
         private void InputInitBalance_GotFocus(object sender, RoutedEventArgs e)
         {
             BorderAlert.Visibility = Visibility.Collapsed;
+        }
+
+        // ===== UX Helpers =====
+        private void PlaySound(int freq, int dur)
+        {
+            System.Threading.Tasks.Task.Run(() =>
+            {
+                try { System.Console.Beep(freq, dur); } catch { }
+            });
+        }
+
+        private async void FlashAlertBackground(string type)
+        {
+            if (BorderAlert == null) return;
+            Brush oldBg = BorderAlert.Background;
+            Brush oldBorder = BorderAlert.BorderBrush;
+
+            if (type == "win")
+            {
+                BorderAlert.Background = new SolidColorBrush(Color.FromRgb(34, 197, 94));
+                BorderAlert.BorderBrush = new SolidColorBrush(Colors.White);
+            }
+            else if (type == "lose")
+            {
+                BorderAlert.Background = new SolidColorBrush(Color.FromRgb(239, 68, 68));
+                BorderAlert.BorderBrush = new SolidColorBrush(Colors.White);
+            }
+            else
+            {
+                BorderAlert.Background = new SolidColorBrush(Color.FromRgb(234, 179, 8));
+                BorderAlert.BorderBrush = new SolidColorBrush(Colors.White);
+            }
+
+            await System.Threading.Tasks.Task.Delay(300);
+
+            BorderAlert.Background = oldBg;
+            BorderAlert.BorderBrush = oldBorder;
+        }
+
+        private void Window_KeyDown(object sender, KeyEventArgs e)
+        {
+            // Do not trigger if typing in textboxes
+            if (FocusManager.GetFocusedElement(this) is TextBox) return;
+
+            if (e.Key == Key.Q) SimulateAddBet("chan");
+            else if (e.Key == Key.W) SimulateAddBet("le");
+            else if (e.Key == Key.A) SimulateAddBet("xiu");
+            else if (e.Key == Key.S) SimulateAddBet("tai");
+            else if (e.Key == Key.Enter || e.Key == Key.Space)
+            {
+                ApplyOutcomes_Click(null, null);
+                e.Handled = true;
+            }
+        }
+
+        private void SimulateAddBet(string key)
+        {
+            if (betAmounts.ContainsKey(key))
+            {
+                betAmounts[key] += currentChip;
+                undoStack.Push(new BetUndoStep { BetKey = key, Amount = currentChip });
+                PlaySound(1200, 30);
+                UpdateUI();
+            }
         }
     }
 
