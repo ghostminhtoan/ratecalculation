@@ -276,12 +276,13 @@ namespace Rate_Calculation
             if (border == null || border.Tag == null) return;
             string key = border.Tag.ToString();
 
-            if (currentChip <= 0)
+            if (currentBalance < currentChip)
             {
-                ShowAlert("⚠️ Vui lòng chọn mệnh giá chip hợp lệ!", "info");
+                ShowAlert("⚠️ Số dư hiện tại không đủ để đặt cược!", "info");
                 return;
             }
 
+            currentBalance = Math.Round(currentBalance - currentChip, 2);
             betAmounts[key] = betAmounts[key] + currentChip;
             undoStack.Push(new BetUndoStep { BetKey = key, Amount = currentChip });
             PlaySound(1200, 30);
@@ -307,6 +308,7 @@ namespace Rate_Calculation
             {
                 double removedAmt = all[removeIdx].Amount;
                 betAmounts[key] = Math.Max(0, betAmounts[key] - removedAmt);
+                currentBalance = Math.Round(currentBalance + removedAmt, 2);
                 all.RemoveAt(removeIdx);
                 undoStack.Clear();
                 for (int i = all.Count - 1; i >= 0; i--)
@@ -325,6 +327,8 @@ namespace Rate_Calculation
             if (border == null || border.Tag == null) return;
             string key = border.Tag.ToString();
 
+            double amt = betAmounts[key];
+            currentBalance = Math.Round(currentBalance + amt, 2);
             betAmounts[key] = 0;
             List<BetUndoStep> remaining = new List<BetUndoStep>();
             foreach (BetUndoStep step in undoStack)
@@ -344,6 +348,7 @@ namespace Rate_Calculation
             if (undoStack.Count == 0) return;
             BetUndoStep step = undoStack.Pop();
             betAmounts[step.BetKey] = Math.Max(0, betAmounts[step.BetKey] - step.Amount);
+            currentBalance = Math.Round(currentBalance + step.Amount, 2);
             UpdateUI();
         }
 
@@ -373,6 +378,7 @@ namespace Rate_Calculation
                 return;
             }
 
+            double payout = 0;
             double totalDelta = 0;
             List<string> descList = new List<string>();
 
@@ -382,19 +388,30 @@ namespace Rate_Calculation
                 if (amount <= 0) continue;
 
                 double ratio = PayoutRatios[key];
-                double delta = 0;
+                double cellPayout = 0;
+                double cellNet = 0;
                 if (outcome == "win")
-                    delta = Math.Round(amount * ratio, 2);
+                {
+                    cellPayout = amount + Math.Round(amount * ratio, 2);
+                    cellNet = Math.Round(amount * ratio, 2);
+                }
                 else if (outcome == "draw")
-                    delta = Math.Round(amount * 0.96, 2) - amount;
+                {
+                    cellPayout = Math.Round(amount * 0.96, 2);
+                    cellNet = cellPayout - amount;
+                }
                 else if (outcome == "lose")
-                    delta = -amount;
+                {
+                    cellPayout = 0;
+                    cellNet = -amount;
+                }
 
-                totalDelta += delta;
+                payout += cellPayout;
+                totalDelta += cellNet;
                 descList.Add(string.Format("{0}: {1:#,##0.##} xu", BetNames[key], amount));
             }
 
-            currentBalance = Math.Round(currentBalance + totalDelta, 2);
+            currentBalance = Math.Round(currentBalance + payout, 2);
             roundCounter++;
 
             HistoryItem item = new HistoryItem();
@@ -466,8 +483,17 @@ namespace Rate_Calculation
                         // Auto-add current chip if no bet exists on this cell
                         if (betAmounts[betKey] <= 0)
                         {
+                            if (currentBalance < currentChip)
+                            {
+                                ShowAlert("⚠️ Số dư hiện tại không đủ để đặt cược!", "info");
+                                btn.IsChecked = false;
+                                cellOutcomes[betKey] = "none";
+                                return;
+                            }
+                            currentBalance = Math.Round(currentBalance - currentChip, 2);
                             betAmounts[betKey] = currentChip;
                             undoStack.Push(new BetUndoStep { BetKey = betKey, Amount = currentChip });
+                            PlaySound(1200, 30);
                             UpdateUI();
                         }
                     }
@@ -533,6 +559,7 @@ namespace Rate_Calculation
                 return;
             }
 
+            double payout = 0;
             double totalDelta = 0;
             List<string> descList = new List<string>();
 
@@ -543,19 +570,30 @@ namespace Rate_Calculation
                 if (outcome == "none" || amount <= 0) continue;
 
                 double ratio = PayoutRatios[key];
-                double delta = 0;
+                double cellPayout = 0;
+                double cellNet = 0;
                 if (outcome == "win")
-                    delta = Math.Round(amount * ratio, 2);
+                {
+                    cellPayout = amount + Math.Round(amount * ratio, 2);
+                    cellNet = Math.Round(amount * ratio, 2);
+                }
                 else if (outcome == "draw")
-                    delta = Math.Round(amount * 0.96, 2) - amount;
+                {
+                    cellPayout = Math.Round(amount * 0.96, 2);
+                    cellNet = cellPayout - amount;
+                }
                 else if (outcome == "lose")
-                    delta = -amount;
+                {
+                    cellPayout = 0;
+                    cellNet = -amount;
+                }
 
-                totalDelta += delta;
+                payout += cellPayout;
+                totalDelta += cellNet;
                 descList.Add(string.Format("{0}: {1:#,##0.##} xu ({2})", BetNames[key], amount, outcome.ToUpper()));
             }
 
-            currentBalance = Math.Round(currentBalance + totalDelta, 2);
+            currentBalance = Math.Round(currentBalance + payout, 2);
             roundCounter++;
 
             HistoryItem item = new HistoryItem();
@@ -809,6 +847,12 @@ namespace Rate_Calculation
         {
             if (betAmounts.ContainsKey(key))
             {
+                if (currentBalance < currentChip)
+                {
+                    ShowAlert("⚠️ Số dư hiện tại không đủ để đặt cược!", "info");
+                    return;
+                }
+                currentBalance = Math.Round(currentBalance - currentChip, 2);
                 betAmounts[key] += currentChip;
                 undoStack.Push(new BetUndoStep { BetKey = key, Amount = currentChip });
                 PlaySound(1200, 30);
