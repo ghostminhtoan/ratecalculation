@@ -1,0 +1,882 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Harvard Probability Lab - Win/Loss Analyzer</title>
+  <meta name="description" content="Harvard Probability Lab - Win/Loss Analyzer with Windows 11 Dark Theme Grid" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Segoe+UI:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      /* Windows 11 Dark Theme Colors */
+      --bg: #1c1c1c;
+      --panel-bg: #2d2d2d;
+      --card-bg: #323232;
+      --card-hover: #3d3d3d;
+      --accent: #60cdff;
+      --accent-hover: #0078d4;
+      --border: #444444;
+      --border-bright: #555555;
+      
+      --text: #ffffff;
+      --muted: #aaaaaa;
+      
+      /* Colors from images */
+      --win-color: #22c55e;
+      --draw-color: #eab308;
+      --lose-color: #ef4444;
+      
+      --tai-color: #ff6b35;
+      --xiu-color: #3b82f6;
+      --chan-color: #3b82f6;
+      --le-color: #ff6b35;
+      
+      --red-ball: #ef4444;
+      --white-ball: #f8fafc;
+    }
+
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      padding: 24px;
+    }
+
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 24px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--border);
+    }
+    .title-area h1 { font-size: 20px; font-weight: 600; letter-spacing: -0.3px; display: flex; align-items: center; gap: 8px;}
+    .title-area p { font-size: 12px; color: var(--muted); margin-top: 2px; }
+    .badge {
+      background: #2b2b2b; border: 1px solid var(--border);
+      padding: 6px 12px; border-radius: 4px; font-size: 11px; font-weight: 500;
+      color: var(--accent);
+    }
+
+    /* Windows 11 2x2 Grid Layout */
+    .grid-container {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      grid-template-rows: auto auto;
+      gap: 20px;
+      flex: 1;
+    }
+    @media (max-width: 1000px) {
+      .grid-container {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto;
+      }
+    }
+
+    /* Panel Card Styles */
+    .panel {
+      background: var(--panel-bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+    }
+    .panel-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      padding-bottom: 10px;
+    }
+    .panel-title {
+      font-size: 14px; font-weight: 600; color: #fff;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .panel-icon { color: var(--accent); font-size: 16px; }
+
+    /* Inputs */
+    .w11-input-group {
+      display: flex; gap: 8px; margin-bottom: 16px;
+    }
+    .w11-input {
+      flex: 1; background: #202020; border: 1px solid var(--border);
+      border-bottom: 2px solid var(--border); border-radius: 4px;
+      padding: 8px 12px; color: #fff; font-family: inherit; font-size: 14px;
+      transition: all 0.2s;
+    }
+    .w11-input:focus {
+      outline: none; border-color: var(--accent); border-bottom-color: var(--accent);
+    }
+    .w11-btn {
+      background: #2d2d2d; border: 1px solid var(--border); border-radius: 4px;
+      padding: 8px 16px; color: #fff; font-family: inherit; font-size: 13px;
+      font-weight: 500; cursor: pointer; transition: all 0.15s;
+    }
+    .w11-btn:hover { background: var(--card-hover); border-color: var(--border-bright); }
+    .w11-btn.primary {
+      background: var(--accent-hover); border-color: transparent;
+    }
+    .w11-btn.primary:hover {
+      filter: brightness(1.15);
+    }
+
+    /* Panel 1: Starting Balance & Stats */
+    .balance-main {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 40px; font-weight: 600; color: var(--accent);
+      margin-bottom: 16px; display: flex; align-items: baseline; gap: 8px;
+    }
+    .balance-sub { font-size: 14px; color: var(--muted); }
+    .stat-list {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: auto;
+    }
+    .stat-box {
+      background: var(--card-bg); border: 1px solid var(--border); border-radius: 6px;
+      padding: 12px; display: flex; flex-direction: column;
+    }
+    .stat-box-lbl { font-size: 11px; color: var(--muted); text-transform: uppercase; }
+    .stat-box-val { font-size: 18px; font-weight: 600; margin-top: 4px; font-family: 'JetBrains Mono', monospace; }
+
+    /* Panel 2: Bet Selector styled as the real Board from Image */
+    .board-layout {
+      display: grid;
+      grid-template-columns: 1fr 1.2fr 1.2fr 1fr;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+    @media (max-width: 600px) {
+      .board-layout {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .board-cell {
+      background: #252525; border: 1.5px solid var(--border); border-radius: 6px;
+      padding: 8px; cursor: pointer; text-align: center;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      transition: all 0.15s; position: relative; min-height: 85px;
+    }
+    .board-cell:hover {
+      border-color: var(--accent); background: #2d2d2d;
+    }
+    .board-cell.selected {
+      background: rgba(96, 205, 255, 0.12);
+      border-color: var(--accent);
+      box-shadow: 0 0 10px rgba(96,205,255,0.25);
+    }
+    .board-cell-name { font-size: 15px; font-weight: 700; margin-bottom: 4px; }
+    .board-cell-ratio { font-size: 10px; color: var(--muted); font-family: 'JetBrains Mono', monospace; }
+    .board-cell-balls { display: flex; gap: 2px; margin-top: 6px; }
+    .board-cell-ball {
+      width: 10px; height: 10px; border-radius: 50%; border: 1px solid rgba(0,0,0,0.5);
+    }
+    .board-cell-ball.red { background: var(--red-ball); }
+    .board-cell-ball.white { background: var(--white-ball); }
+    .board-cell-ball-number {
+      font-size: 9px; font-weight: bold; width: 12px; height: 12px;
+      border-radius: 50%; display: flex; align-items: center; justify-content: center;
+      margin-left: 2px; background: #444; color: #fff;
+    }
+
+    /* Chips row */
+    .chips-container {
+      display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-top: 10px;
+    }
+    .w11-chip {
+      padding: 6px 12px; border-radius: 16px; border: 1px solid var(--border);
+      background: #252525; color: #fff; font-size: 13px; font-weight: 500;
+      cursor: pointer; display: flex; align-items: center; gap: 6px;
+      transition: all 0.15s;
+    }
+    .w11-chip::before {
+      content: ''; display: inline-block; width: 10px; height: 10px; border-radius: 50%;
+    }
+    .w11-chip[data-val="10"]::before  { background: #a855f7; }
+    .w11-chip[data-val="20"]::before  { background: #3b82f6; }
+    .w11-chip[data-val="50"]::before  { background: #22c55e; }
+    .w11-chip[data-val="100"]::before { background: #f59e0b; }
+    .w11-chip[data-val="300"]::before { background: #ef4444; }
+
+    .w11-chip:hover { background: var(--card-hover); border-color: var(--border-bright); }
+    .w11-chip.selected {
+      background: var(--accent-hover); border-color: transparent; color: #fff;
+    }
+
+    /* Panel 3: Round & Resolution */
+    .round-summary {
+      background: var(--card-bg); border: 1px solid var(--border); border-radius: 6px;
+      padding: 16px; margin-bottom: 20px;
+    }
+    .round-summary-row {
+      display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 13px;
+    }
+    .round-summary-row:last-child { margin-bottom: 0; }
+    .round-summary-val { font-family: 'JetBrains Mono', monospace; font-weight: 600; }
+
+    .resolution-buttons {
+      display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-top: auto;
+    }
+    .resolution-btn {
+      padding: 14px; border-radius: 6px; border: 1px solid var(--border);
+      background: #252525; color: #fff; font-family: inherit; font-size: 14px;
+      font-weight: 600; cursor: pointer; transition: all 0.15s;
+      display: flex; flex-direction: column; align-items: center; gap: 6px;
+    }
+    .resolution-btn.win { border-color: rgba(34,197,94,0.3); }
+    .resolution-btn.win:hover { background: rgba(34,197,94,0.1); border-color: var(--win-color); }
+    .resolution-btn.draw { border-color: rgba(234,179,8,0.3); }
+    .resolution-btn.draw:hover { background: rgba(234,179,8,0.1); border-color: var(--draw-color); }
+    .resolution-btn.lose { border-color: rgba(239,68,68,0.3); }
+    .resolution-btn.lose:hover { background: rgba(239,68,68,0.1); border-color: var(--lose-color); }
+    .resolution-btn:active { transform: scale(0.97); }
+
+    .result-alert {
+      margin-top: 14px; padding: 12px; border-radius: 6px; font-size: 13px;
+      font-weight: 500; display: none; text-align: center; border: 1px solid transparent;
+      animation: slideDown 0.2s ease-out;
+    }
+    .result-alert.win { background: rgba(34,197,94,0.12); border-color: rgba(34,197,94,0.25); color: var(--win-color); }
+    .result-alert.draw { background: rgba(234,179,8,0.12); border-color: rgba(234,179,8,0.25); color: var(--draw-color); }
+    .result-alert.lose { background: rgba(239,68,68,0.12); border-color: rgba(239,68,68,0.25); color: var(--lose-color); }
+    .result-alert.info { background: rgba(96,205,255,0.12); border-color: rgba(96,205,255,0.25); color: var(--accent); }
+
+    @keyframes slideDown { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* Panel 4: Overall Results & History */
+    .history-container {
+      flex: 1; overflow-y: auto; max-height: 180px;
+      border: 1px solid var(--border); border-radius: 6px;
+      background: #252525; padding: 10px; display: flex; flex-direction: column; gap: 6px;
+    }
+    .history-container::-webkit-scrollbar { width: 4px; }
+    .history-container::-webkit-scrollbar-thumb { background: var(--border-bright); border-radius: 2px; }
+
+    .hist-item {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 8px; border-radius: 4px; background: var(--card-bg);
+      font-size: 12px; border-left: 3px solid transparent;
+    }
+    .hist-item.win { border-left-color: var(--win-color); }
+    .hist-item.draw { border-left-color: var(--draw-color); }
+    .hist-item.lose { border-left-color: var(--lose-color); }
+    .hist-info { display: flex; flex-direction: column; }
+    .hist-outcome { font-weight: 600; }
+    .hist-bal-diff { font-family: 'JetBrains Mono', monospace; font-weight: 600; }
+    .hist-bal-diff.pos { color: var(--win-color); }
+    .hist-bal-diff.neg { color: var(--lose-color); }
+    .hist-bal-diff.neu { color: var(--draw-color); }
+
+    .sparkline-container {
+      height: 70px; margin-top: 14px; border: 1px solid var(--border);
+      border-radius: 6px; background: #202020; padding: 6px;
+    }
+
+    /* Modal End Session styling */
+    .modal {
+      position: fixed; inset: 0; z-index: 1000;
+      background: rgba(0,0,0,0.6); backdrop-filter: blur(4px);
+      display: flex; align-items: center; justify-content: center;
+      opacity: 0; pointer-events: none; transition: all 0.2s;
+    }
+    .modal.active { opacity: 1; pointer-events: auto; }
+    .modal-content {
+      background: var(--panel-bg); border: 1px solid var(--border);
+      border-radius: 12px; padding: 32px; width: 100%; max-width: 480px;
+      text-align: center; transform: scale(0.9); transition: all 0.2s;
+    }
+    .modal.active .modal-content { transform: scale(1); }
+    .modal-emoji { font-size: 48px; margin-bottom: 12px; }
+    .modal-title { font-size: 20px; font-weight: 600; margin-bottom: 8px; }
+    .modal-desc { font-size: 14px; color: var(--muted); margin-bottom: 24px; line-height: 1.6; }
+    .modal-grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 28px;
+    }
+    .modal-stat {
+      background: var(--card-bg); border: 1px solid var(--border); border-radius: 6px;
+      padding: 12px;
+    }
+    .modal-stat-lbl { font-size: 11px; color: var(--muted); }
+    .modal-stat-val { font-size: 18px; font-weight: 600; margin-top: 4px; font-family: 'JetBrains Mono', monospace; }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="title-area">
+      <h1>🎲 Harvard Sic Bo Laboratory</h1>
+      <p>Win / Loss Comb-Combination Simulator for Study Purpose</p>
+    </div>
+    <span class="badge">Windows 11 Fluid Layout</span>
+  </header>
+
+  <div class="grid-container">
+
+    <!-- Panel 1: Starting Balance & Stats -->
+    <div class="panel">
+      <div class="panel-header">
+        <span class="panel-title"><span class="panel-icon">💼</span> Panel 1: Số tiền ban đầu</span>
+        <button class="w11-btn" onclick="openEndSession()">End Session</button>
+      </div>
+
+      <div class="balance-main">
+        <span id="txtBalance">1,000</span>
+        <span class="balance-sub">xu</span>
+      </div>
+
+      <div class="w11-input-group">
+        <input type="number" id="inputInitBalance" class="w11-input" placeholder="Nhập số dư ban đầu..." min="10" />
+        <button class="w11-btn primary" onclick="setInitialBalance()">Khởi tạo</button>
+      </div>
+
+      <div class="stat-list">
+        <div class="stat-box">
+          <span class="stat-box-lbl">Số dư ban đầu</span>
+          <span class="stat-box-val" id="lblInitBalance">1,000</span>
+        </div>
+        <div class="stat-box">
+          <span class="stat-box-lbl">Lợi nhuận ròng</span>
+          <span class="stat-box-val" id="lblNetProfit" style="color:var(--accent);">0</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Panel 2: Bet Selector & Chip Manager -->
+    <div class="panel">
+      <div class="panel-header">
+        <span class="panel-title"><span class="panel-icon">🎯</span> Panel 2: Đặt cược (Chọn ô cược &amp; Chip)</span>
+      </div>
+
+      <!-- Grid layout matching the requested photo perfectly -->
+      <div class="board-layout">
+        
+        <!-- Left Side Column -->
+        <div style="display:flex; flex-direction:column; gap:6px;">
+          <!-- 4 Trang (1:14) -->
+          <div class="board-cell" data-bet="4trang">
+            <span class="board-cell-balls">
+              <span class="board-cell-ball white"></span>
+              <span class="board-cell-ball white"></span>
+              <span class="board-cell-ball white"></span>
+              <span class="board-cell-ball white"></span>
+              <span class="board-cell-ball-number" style="background:#555;">0</span>
+            </span>
+            <span class="board-cell-ratio">1:14</span>
+          </div>
+          <!-- 3 Trang 1 Do (1:2.8) -->
+          <div class="board-cell" data-bet="3t1d">
+            <span class="board-cell-balls">
+              <span class="board-cell-ball white"></span>
+              <span class="board-cell-ball white"></span>
+              <span class="board-cell-ball white"></span>
+              <span class="board-cell-ball red"></span>
+              <span class="board-cell-ball-number" style="background:#dc2626;">1</span>
+            </span>
+            <span class="board-cell-ratio">1:2.8</span>
+          </div>
+          <!-- 2 Do 2 Trang (1:1.6) -->
+          <div class="board-cell" data-bet="2d2t">
+            <span class="board-cell-balls">
+              <span class="board-cell-ball white"></span>
+              <span class="board-cell-ball white"></span>
+              <span class="board-cell-ball red"></span>
+              <span class="board-cell-ball red"></span>
+              <span class="board-cell-ball-number" style="background:#dc2626;">2</span>
+            </span>
+            <span class="board-cell-ratio">1:1.6</span>
+          </div>
+        </div>
+
+        <!-- Middle Column 1 (Chan - Xiu) -->
+        <div style="display:flex; flex-direction:column; gap:6px;">
+          <!-- Chan (1:0.96) -->
+          <div class="board-cell" data-bet="chan" style="flex:1;">
+            <span class="board-cell-name" style="color:var(--chan-color);">Chẵn</span>
+            <span class="board-cell-ratio">1:0.96</span>
+          </div>
+          <!-- Xiu (1:0.96) -->
+          <div class="board-cell" data-bet="xiu" style="flex:1;">
+            <span class="board-cell-name" style="color:var(--xiu-color);">Xỉu</span>
+            <span class="board-cell-ratio">1:0.96</span>
+          </div>
+        </div>
+
+        <!-- Middle Column 2 (Le - Tai) -->
+        <div style="display:flex; flex-direction:column; gap:6px;">
+          <!-- Le (1:0.96) -->
+          <div class="board-cell" data-bet="le" style="flex:1;">
+            <span class="board-cell-name" style="color:var(--le-color);">Lẻ</span>
+            <span class="board-cell-ratio">1:0.96</span>
+          </div>
+          <!-- Tai (1:0.96) -->
+          <div class="board-cell" data-bet="tai" style="flex:1;">
+            <span class="board-cell-name" style="color:var(--tai-color);">Tài</span>
+            <span class="board-cell-ratio">1:0.96</span>
+          </div>
+        </div>
+
+        <!-- Right Side Column -->
+        <div style="display:flex; flex-direction:column; gap:6px;">
+          <!-- 4 Do (1:14) -->
+          <div class="board-cell" data-bet="4do">
+            <span class="board-cell-balls">
+              <span class="board-cell-ball red"></span>
+              <span class="board-cell-ball red"></span>
+              <span class="board-cell-ball red"></span>
+              <span class="board-cell-ball red"></span>
+              <span class="board-cell-ball-number" style="background:#dc2626;">4</span>
+            </span>
+            <span class="board-cell-ratio">1:14</span>
+          </div>
+          <!-- 3 Do 1 Trang (1:2.8) -->
+          <div class="board-cell" data-bet="3d1t">
+            <span class="board-cell-balls">
+              <span class="board-cell-ball red"></span>
+              <span class="board-cell-ball red"></span>
+              <span class="board-cell-ball red"></span>
+              <span class="board-cell-ball white"></span>
+              <span class="board-cell-ball-number" style="background:#555;">3</span>
+            </span>
+            <span class="board-cell-ratio">1:2.8</span>
+          </div>
+          <!-- 4 Do / 4 Trang combo (1:6.8) -->
+          <div class="board-cell" data-bet="4combo">
+            <span class="board-cell-balls">
+              <span class="board-cell-ball red"></span>
+              <span class="board-cell-ball red"></span>
+              <span class="board-cell-ball red"></span>
+              <span class="board-cell-ball red"></span>
+            </span>
+            <span class="board-cell-balls" style="margin-top:2px;">
+              <span class="board-cell-ball white"></span>
+              <span class="board-cell-ball white"></span>
+              <span class="board-cell-ball white"></span>
+              <span class="board-cell-ball white"></span>
+            </span>
+            <span class="board-cell-ratio">1:6.8</span>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="chips-container" id="chipsContainer">
+        <div class="w11-chip" data-val="10">10</div>
+        <div class="w11-chip" data-val="20">20</div>
+        <div class="w11-chip" data-val="50">50</div>
+        <div class="w11-chip" data-val="100">100</div>
+        <div class="w11-chip" data-val="300">300</div>
+        <input type="number" id="inputCustomBet" class="w11-input" style="max-width:120px; margin-left:auto; margin-bottom:0;" placeholder="Tùy chọn..." min="1" />
+      </div>
+    </div>
+
+    <!-- Panel 3: Win / Draw / Lose Actions -->
+    <div class="panel">
+      <div class="panel-header">
+        <span class="panel-title"><span class="panel-icon">⚡</span> Panel 3: Kết quả ván hiện tại</span>
+      </div>
+
+      <div class="round-summary">
+        <div class="round-summary-row">
+          <span>Ô cược đang chọn:</span>
+          <span class="round-summary-val" id="lblSelectedBet" style="color:var(--accent);">Chưa chọn</span>
+        </div>
+        <div class="round-summary-row">
+          <span>Tiền cược (Deal):</span>
+          <span class="round-summary-val" id="lblDealAmount" style="color:var(--accent);">0 xu</span>
+        </div>
+        <div class="round-summary-row">
+          <span>Hệ số tỷ lệ:</span>
+          <span class="round-summary-val" id="lblRatioVal">—</span>
+        </div>
+      </div>
+
+      <div class="resolution-buttons">
+        <button class="resolution-btn win" onclick="resolveRound('win')">
+          <span>🏆</span> Win
+        </button>
+        <button class="resolution-btn draw" onclick="resolveRound('draw')">
+          <span>🤝</span> Draw
+        </button>
+        <button class="resolution-btn lose" onclick="resolveRound('lose')">
+          <span>💀</span> Lose
+        </button>
+      </div>
+
+      <div id="resultAlert" class="result-alert"></div>
+    </div>
+
+    <!-- Panel 4: Overall Session History & Sparkline -->
+    <div class="panel">
+      <div class="panel-header">
+        <span class="panel-title"><span class="panel-icon">📜</span> Panel 4: Kết quả toàn bộ ván</span>
+        <button class="w11-btn" style="padding: 4px 8px; font-size:11px;" onclick="clearHistory()">Reset Log</button>
+      </div>
+
+      <div class="history-container" id="historyContainer">
+        <div style="color:var(--muted); text-align:center; padding: 20px; font-size: 13px;">Chưa có dữ liệu ván đấu nào...</div>
+      </div>
+
+      <div class="sparkline-container">
+        <canvas id="sparklineCanvas"></canvas>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- End Session Dialog -->
+  <div class="modal" id="endSessionModal">
+    <div class="modal-content">
+      <div class="modal-emoji" id="modalEmoji">🎉</div>
+      <div class="modal-title" id="modalTitle">Kết quả phiên làm việc</div>
+      <div class="modal-desc" id="modalDesc">Bạn đã chơi được 12 ván với hiệu suất tốt!</div>
+      
+      <div class="modal-grid">
+        <div class="modal-stat">
+          <span class="modal-stat-lbl">Số dư cuối cùng</span>
+          <span class="modal-stat-val" id="modalFinalBalance">1,200</span>
+        </div>
+        <div class="modal-stat">
+          <span class="modal-stat-lbl">Thay đổi (Delta)</span>
+          <span class="modal-stat-val" id="modalDeltaVal">+200</span>
+        </div>
+        <div class="modal-stat">
+          <span class="modal-stat-lbl">Tỷ lệ thắng</span>
+          <span class="modal-stat-val" id="modalWinRate">55%</span>
+        </div>
+        <div class="modal-stat">
+          <span class="modal-stat-lbl">Tổng số ván</span>
+          <span class="modal-stat-val" id="modalTotalRounds">12</span>
+        </div>
+      </div>
+
+      <button class="w11-btn primary" style="width:100%; padding:12px;" onclick="closeEndSession()">Tiếp tục học tập</button>
+    </div>
+  </div>
+
+  <script>
+    // System Payout Config matches photo ratio values
+    const PAYOUT_RATIOS = {
+      '4do': 14,
+      '4trang': 14,
+      '3d1t': 2.8,
+      '3t1d': 2.8,
+      '2d2t': 1.6,
+      'tai': 0.96,
+      'xiu': 0.96,
+      'le': 0.96,
+      'chan': 0.96,
+      '4combo': 6.8
+    };
+
+    const BET_NAMES = {
+      '4do': '4 Đỏ',
+      '4trang': '4 Trắng',
+      '3d1t': '3 Đỏ 1 Trắng',
+      '3t1d': '3 Trắng 1 Đỏ',
+      '2d2t': '2 Đỏ 2 Trắng',
+      'tai': 'Tài',
+      'xiu': 'Xỉu',
+      'le': 'Lẻ',
+      'chan': 'Chẵn',
+      '4combo': 'Combo 4Đ/4T'
+    };
+
+    // State Variables
+    let currentBalance = 1000;
+    let initialBalance = 1000;
+    let selectedBet = null;
+    let currentDeal = 0;
+    let history = [];
+    let stats = { wins: 0, draws: 0, losses: 0 };
+    let balanceHistory = [1000];
+
+    // Initialize logic
+    document.addEventListener("DOMContentLoaded", () => {
+      // Board cells listener
+      document.querySelectorAll(".board-cell").forEach(cell => {
+        cell.addEventListener("click", () => {
+          document.querySelectorAll(".board-cell").forEach(c => c.classList.remove("selected"));
+          cell.classList.add("selected");
+          selectedBet = cell.getAttribute("data-bet");
+          
+          document.getElementById("lblSelectedBet").innerText = BET_NAMES[selectedBet];
+          document.getElementById("lblRatioVal").innerText = "1 : " + PAYOUT_RATIOS[selectedBet];
+        });
+      });
+
+      // Chips listener
+      document.querySelectorAll(".w11-chip").forEach(chip => {
+        chip.addEventListener("click", () => {
+          document.querySelectorAll(".w11-chip").forEach(c => c.classList.remove("selected"));
+          chip.classList.add("selected");
+          currentDeal = parseInt(chip.getAttribute("data-val"));
+          document.getElementById("inputCustomBet").value = "";
+          updateDealLabel();
+        });
+      });
+
+      // Custom bet handler
+      document.getElementById("inputCustomBet").addEventListener("input", (e) => {
+        document.querySelectorAll(".w11-chip").forEach(c => c.classList.remove("selected"));
+        const val = parseInt(e.target.value);
+        currentDeal = isNaN(val) ? 0 : val;
+        updateDealLabel();
+      });
+
+      updateUI();
+      drawSparkline();
+    });
+
+    function updateDealLabel() {
+      document.getElementById("lblDealAmount").innerText = currentDeal.toLocaleString() + " xu";
+    }
+
+    function setInitialBalance() {
+      const val = parseInt(document.getElementById("inputInitBalance").value);
+      if (isNaN(val) || val <= 0) {
+        showAlert("Vui lòng nhập số dư ban đầu hợp lệ!", "info");
+        return;
+      }
+      initialBalance = val;
+      currentBalance = val;
+      balanceHistory = [val];
+      stats = { wins: 0, draws: 0, losses: 0 };
+      history = [];
+      
+      document.getElementById("inputInitBalance").value = "";
+      updateUI();
+      renderHistory();
+      drawSparkline();
+      showAlert(`Đã reset số dư ban đầu về ${val.toLocaleString()} xu`, "info");
+    }
+
+    function resolveRound(outcome) {
+      if (!selectedBet) {
+        showAlert("⚠️ Hãy chọn một ô cược trên bàn!", "info");
+        return;
+      }
+      if (currentDeal <= 0) {
+        showAlert("⚠️ Vui lòng đặt cược số tiền hợp lệ!", "info");
+        return;
+      }
+      if (currentDeal > currentBalance) {
+        showAlert("⚠️ Số dư hiện tại không đủ để thực hiện giao dịch!", "info");
+        return;
+      }
+
+      const ratio = PAYOUT_RATIOS[selectedBet];
+      let delta = 0;
+      let alertMsg = "";
+
+      if (outcome === "win") {
+        // Win: Nhận về = cược + (cược * tỷ lệ)
+        delta = Math.round(currentDeal * ratio * 100) / 100;
+        alertMsg = `🏆 Thắng cược! Nhận về +${(currentDeal + delta).toLocaleString()} xu (Lãi +${delta.toLocaleString()} xu)`;
+        stats.wins++;
+      } else if (outcome === "draw") {
+        // Draw: Nhận lại 96% tiền cược (Mất 4% tiền cược)
+        const returned = Math.round(currentDeal * 0.96 * 100) / 100;
+        delta = returned - currentDeal;
+        alertMsg = `🤝 Hoà! Nhận lại 96% cược: ${returned.toLocaleString()} xu (Lỗ -${Math.abs(delta).toLocaleString()} xu)`;
+        stats.draws++;
+      } else if (outcome === "lose") {
+        // Lose: Mất cược * tỷ lệ
+        delta = -Math.round(currentDeal * ratio * 100) / 100;
+        alertMsg = `💀 Thua cược! Tổn thất -${Math.abs(delta).toLocaleString()} xu`;
+        stats.losses++;
+      }
+
+      currentBalance = Math.round((currentBalance + delta) * 100) / 100;
+      balanceHistory.push(currentBalance);
+
+      // Add to session log
+      history.unshift({
+        bet: selectedBet,
+        deal: currentDeal,
+        outcome: outcome,
+        delta: delta,
+        newBalance: currentBalance
+      });
+
+      showAlert(alertMsg, outcome);
+      updateUI();
+      renderHistory();
+      drawSparkline();
+    }
+
+    function showAlert(text, type) {
+      const el = document.getElementById("resultAlert");
+      el.innerText = text;
+      el.className = "result-alert " + type;
+      el.style.display = "block";
+    }
+
+    function updateUI() {
+      document.getElementById("txtBalance").innerText = currentBalance.toLocaleString();
+      document.getElementById("lblInitBalance").innerText = initialBalance.toLocaleString();
+      
+      const profit = currentBalance - initialBalance;
+      const profitEl = document.getElementById("lblNetProfit");
+      profitEl.innerText = (profit >= 0 ? "+" : "") + profit.toLocaleString();
+      profitEl.style.color = profit > 0 ? "var(--win-color)" : profit < 0 ? "var(--lose-color)" : "var(--accent)";
+    }
+
+    function renderHistory() {
+      const container = document.getElementById("historyContainer");
+      if (history.length === 0) {
+        container.innerHTML = `<div style="color:var(--muted); text-align:center; padding: 20px; font-size: 13px;">Chưa có dữ liệu ván đấu nào...</div>`;
+        return;
+      }
+
+      container.innerHTML = history.map((item, index) => {
+        const roundNum = history.length - index;
+        const deltaStr = (item.delta >= 0 ? "+" : "") + item.delta.toLocaleString();
+        const deltaClass = item.delta > 0 ? "pos" : (item.delta < 0 ? "neg" : "neu");
+        const outcomeText = item.outcome.toUpperCase();
+
+        return `
+          <div class="hist-item ${item.outcome}">
+            <div class="hist-info">
+              <span class="hist-outcome">Ván #${roundNum}: ${BET_NAMES[item.bet]} (${outcomeText})</span>
+              <span style="color: var(--muted); font-size:11px;">Cược: ${item.deal.toLocaleString()} xu</span>
+            </div>
+            <div style="text-align:right;">
+              <span class="hist-bal-diff ${deltaClass}">${deltaStr}</span>
+              <div style="color:var(--muted); font-size:10px;">Dư: ${item.newBalance.toLocaleString()}</div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function clearHistory() {
+      history = [];
+      balanceHistory = [initialBalance];
+      currentBalance = initialBalance;
+      stats = { wins: 0, draws: 0, losses: 0 };
+      
+      document.getElementById("resultAlert").style.display = "none";
+      updateUI();
+      renderHistory();
+      drawSparkline();
+    }
+
+    function drawSparkline() {
+      const canvas = document.getElementById("sparklineCanvas");
+      const ctx = canvas.getContext("2d");
+      
+      const w = canvas.parentNode.clientWidth - 12;
+      const h = 58;
+      canvas.width = w;
+      canvas.height = h;
+
+      ctx.clearRect(0, 0, w, h);
+      
+      if (balanceHistory.length < 2) {
+        ctx.fillStyle = "#888888";
+        ctx.font = "11px Segoe UI";
+        ctx.textAlign = "center";
+        ctx.fillText("Chưa đủ dữ liệu vẽ đồ thị biến thiên", w / 2, h / 2 + 4);
+        return;
+      }
+
+      const min = Math.min(...balanceHistory);
+      const max = Math.max(...balanceHistory);
+      const range = max - min || 1;
+
+      const padding = 6;
+      const points = balanceHistory.map((val, idx) => {
+        const x = padding + (idx / (balanceHistory.length - 1)) * (w - padding * 2);
+        const y = h - padding - ((val - min) / range) * (h - padding * 2);
+        return { x, y };
+      });
+
+      // Draw gradient under the line
+      const grad = ctx.createLinearGradient(0, 0, 0, h);
+      const isProfitable = currentBalance >= initialBalance;
+      grad.addColorStop(0, isProfitable ? "rgba(34,197,94,0.15)" : "rgba(239,68,68,0.15)");
+      grad.addColorStop(1, "rgba(0,0,0,0)");
+
+      ctx.beginPath();
+      ctx.moveTo(points[0].x, h);
+      points.forEach(pt => ctx.lineTo(pt.x, pt.y));
+      ctx.lineTo(points[points.length - 1].x, h);
+      ctx.closePath();
+      ctx.fillStyle = grad;
+      ctx.fill();
+
+      // Draw line
+      ctx.beginPath();
+      ctx.moveTo(points[0].x, points[0].y);
+      points.forEach(pt => ctx.lineTo(pt.x, pt.y));
+      ctx.strokeStyle = isProfitable ? "var(--win-color)" : "var(--lose-color)";
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
+
+      // Draw last point dot
+      const last = points[points.length - 1];
+      ctx.beginPath();
+      ctx.arc(last.x, last.y, 3, 0, Math.PI * 2);
+      ctx.fillStyle = isProfitable ? "var(--win-color)" : "var(--lose-color)";
+      ctx.fill();
+    }
+
+    // Modal Manager
+    function openEndSession() {
+      const modal = document.getElementById("endSessionModal");
+      const totalRounds = history.length;
+      
+      let winRate = 0;
+      if (totalRounds > 0) {
+        winRate = Math.round((stats.wins / totalRounds) * 100);
+      }
+
+      const diff = currentBalance - initialBalance;
+      const deltaText = (diff >= 0 ? "+" : "") + diff.toLocaleString() + " xu";
+      const deltaColor = diff > 0 ? "var(--win-color)" : (diff < 0 ? "var(--lose-color)" : "#fff");
+
+      document.getElementById("modalFinalBalance").innerText = currentBalance.toLocaleString() + " xu";
+      
+      const deltaEl = document.getElementById("modalDeltaVal");
+      deltaEl.innerText = deltaText;
+      deltaEl.style.color = deltaColor;
+      
+      document.getElementById("modalWinRate").innerText = winRate + "%";
+      document.getElementById("modalTotalRounds").innerText = totalRounds;
+
+      // Dynamic Emoji/Title based on result
+      let emoji = "⚖️";
+      let title = "Học tập hiệu quả";
+      let desc = "Tổng số dư không thay đổi sau các ván thử nghiệm tỉ lệ.";
+
+      if (diff > 0) {
+        emoji = "📈";
+        title = "Có lãi thực nghiệm!";
+        desc = `Chúc mừng! Bạn đã tích luỹ thêm được ${diff.toLocaleString()} xu từ việc phân bổ cược hợp lý.`;
+      } else if (diff < 0) {
+        emoji = "📉";
+        title = "Tổn thất thực nghiệm!";
+        desc = `Số dư hao hụt ${Math.abs(diff).toLocaleString()} xu. Đây là ví dụ trực quan về giá trị kỳ vọng (Expected Value) âm trong xác suất.`;
+      }
+
+      document.getElementById("modalEmoji").innerText = emoji;
+      document.getElementById("modalTitle").innerText = title;
+      document.getElementById("modalDesc").innerHTML = desc;
+
+      modal.classList.add("active");
+    }
+
+    function closeEndSession() {
+      document.getElementById("endSessionModal").classList.remove("active");
+    }
+  </script>
+</body>
+</html>

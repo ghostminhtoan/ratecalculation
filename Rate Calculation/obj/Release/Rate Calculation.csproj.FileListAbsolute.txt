@@ -1,0 +1,17 @@
+C:\Users\Admin\source\repos\Rate Calculation\Rate Calculation\obj\Release\Rate Calculation.csprojResolveAssemblyReference.cache
+C:\Users\Admin\source\repos\Rate Calculation\Rate Calculation\obj\Release\MainWindow.g.cs
+C:\Users\Admin\source\repos\Rate Calculation\Rate Calculation\obj\Release\App.g.cs
+C:\Users\Admin\source\repos\Rate Calculation\Rate Calculation\obj\Release\MainWindow.baml
+C:\Users\Admin\source\repos\Rate Calculation\Rate Calculation\obj\Release\Rate_Calculation.Properties.Resources.resources
+C:\Users\Admin\source\repos\Rate Calculation\Rate Calculation\obj\Release\Rate Calculation.csproj.GenerateResource.Cache
+C:\Users\Admin\source\repos\Rate Calculation\Rate Calculation\bin\ReleaseV2\Rate Calculation.exe.config
+C:\Users\Admin\source\repos\Rate Calculation\Rate Calculation\bin\ReleaseV2\Rate Calculation.exe
+C:\Users\Admin\source\repos\Rate Calculation\Rate Calculation\bin\ReleaseV2\Rate Calculation.pdb
+C:\Users\Admin\source\repos\Rate Calculation\Rate Calculation\bin\Release\Rate Calculation v3.exe.config
+C:\Users\Admin\source\repos\Rate Calculation\Rate Calculation\bin\Release\Rate Calculation v3.exe
+C:\Users\Admin\source\repos\Rate Calculation\Rate Calculation\bin\Release\Rate Calculation v3.pdb
+C:\Users\Admin\source\repos\Rate Calculation\Rate Calculation\obj\Release\Rate Calculation v3_MarkupCompile.cache
+C:\Users\Admin\source\repos\Rate Calculation\Rate Calculation\obj\Release\Rate Calculation v3_MarkupCompile.lref
+C:\Users\Admin\source\repos\Rate Calculation\Rate Calculation\obj\Release\Rate Calculation v3.g.resources
+C:\Users\Admin\source\repos\Rate Calculation\Rate Calculation\obj\Release\Rate Calculation v3.exe
+C:\Users\Admin\source\repos\Rate Calculation\Rate Calculation\obj\Release\Rate Calculation v3.pdb
