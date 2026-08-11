@@ -237,9 +237,8 @@
 
                 <!-- Left Column: contains Panel 1 and Panel 2 stacked vertically -->
                 <StackPanel Orientation="Vertical" Width="402">
-                    
-                    <!-- Panel 1: Balance (390x290) -->
-                    <Border Style="{StaticResource PanelBorderStyle}" Width="390" Height="290">
+                                   <!-- Panel 1: Balance (390x230) -->
+                    <Border Style="{StaticResource PanelBorderStyle}" Width="390" Height="230">
                         <Grid>
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="Auto"/>
@@ -248,37 +247,37 @@
                                 <RowDefinition Height="Auto"/>
                             </Grid.RowDefinitions>
 
-                            <DockPanel Grid.Row="0" Margin="0,0,0,8">
+                            <DockPanel Grid.Row="0" Margin="0,0,0,6">
                                 <TextBlock Text="💼 Panel 1: Số tiền ban đầu" FontSize="13" FontWeight="SemiBold" VerticalAlignment="Center"/>
                                 <Button Content="Reset Session" HorizontalAlignment="Right" Style="{StaticResource W11ButtonStyle}" Padding="8,3" Click="ResetSession_Click"/>
                             </DockPanel>
 
-                            <StackPanel Grid.Row="1" VerticalAlignment="Center">
+                            <StackPanel Grid.Row="1" VerticalAlignment="Center" Margin="0,2">
                                 <DockPanel>
                                     <StackPanel Orientation="Horizontal" DockPanel.Dock="Left">
-                                        <TextBlock x:Name="TxtBalance" Text="1,000" FontSize="36" FontWeight="SemiBold"
+                                        <TextBlock x:Name="TxtBalance" Text="1,000" FontSize="30" FontWeight="SemiBold"
                                                    Foreground="{StaticResource AccentColor}" FontFamily="Consolas"/>
-                                        <TextBlock Text=" xu" FontSize="13" Foreground="{StaticResource MutedText}" VerticalAlignment="Bottom" Margin="4,0,0,8"/>
+                                        <TextBlock Text=" xu" FontSize="12" Foreground="{StaticResource MutedText}" VerticalAlignment="Bottom" Margin="3,0,0,4"/>
                                     </StackPanel>
-                                    <TextBlock x:Name="TxtPlayTime" Text="⏱️ 00:00:00" FontSize="14" Foreground="{StaticResource MutedText}"
-                                               FontFamily="Consolas" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,0,0,10"/>
+                                    <TextBlock x:Name="TxtPlayTime" Text="⏱️ 00:00:00" FontSize="12" Foreground="{StaticResource MutedText}"
+                                               FontFamily="Consolas" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,0,0,6"/>
                                 </DockPanel>
                             </StackPanel>
 
-                            <Grid Grid.Row="2" Margin="0,0,0,10">
+                            <Grid Grid.Row="2" Margin="0,0,0,6">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="*"/>
                                     <ColumnDefinition Width="Auto"/>
                                     <ColumnDefinition Width="Auto"/>
                                 </Grid.ColumnDefinitions>
                                 <TextBox x:Name="InputInitBalance" Grid.Column="0" Background="#202020" Foreground="White"
-                                         BorderBrush="{StaticResource BorderColor}" Padding="6" FontSize="13"
+                                         BorderBrush="{StaticResource BorderColor}" Padding="5" FontSize="12"
                                          VerticalContentAlignment="Center" Margin="0,0,6,0"
                                          GotFocus="InputInitBalance_GotFocus"/>
-                                <Button Grid.Column="1" Content="Khởi tạo" Style="{StaticResource W11PrimaryButtonStyle}"
-                                        Width="80" Margin="0,0,6,0" Click="SetInitialBalance_Click"/>
-                                <Button Grid.Column="2" Content="End (Chốt)" Style="{StaticResource W11ButtonStyle}"
-                                        Width="80" Click="EndSession_Click" Background="#443333" BorderBrush="#EF4444" Foreground="#EF4444"/>
+                                 <Button Grid.Column="1" Content="Khởi tạo" Style="{StaticResource W11PrimaryButtonStyle}"
+                                         Width="80" Margin="0,0,6,0" Click="SetInitialBalance_Click"/>
+                                 <Button Grid.Column="2" Content="End (Chốt)" Style="{StaticResource W11ButtonStyle}"
+                                         Width="80" Click="EndSession_Click" Background="#443333" BorderBrush="#EF4444" Foreground="#EF4444"/>
                             </Grid>
 
                             <Grid Grid.Row="3">
@@ -287,19 +286,19 @@
                                     <ColumnDefinition Width="1*"/>
                                 </Grid.ColumnDefinitions>
                                 <Border Grid.Column="0" Background="{StaticResource CardBg}" BorderBrush="{StaticResource BorderColor}"
-                                        BorderThickness="1" CornerRadius="6" Padding="8" Margin="0,0,3,0">
+                                        BorderThickness="1" CornerRadius="6" Padding="6" Margin="0,0,3,0">
                                     <StackPanel>
                                         <TextBlock Text="Số dư ban đầu" FontSize="10" Foreground="{StaticResource MutedText}"/>
-                                        <TextBlock x:Name="LblInitBalance" Text="1,000" FontSize="16" FontWeight="SemiBold"
+                                        <TextBlock x:Name="LblInitBalance" Text="1,000" FontSize="15" FontWeight="SemiBold"
                                                    FontFamily="Consolas" Margin="0,2,0,0"/>
                                     </StackPanel>
                                 </Border>
                                 <Border Grid.Column="1" Background="{StaticResource CardBg}" BorderBrush="{StaticResource BorderColor}"
-                                        BorderThickness="1" CornerRadius="6" Padding="8" Margin="3,0,0,0">
+                                        BorderThickness="1" CornerRadius="6" Padding="6" Margin="3,0,0,0">
                                     <StackPanel>
                                         <TextBlock Text="Lợi nhuận ròng" FontSize="10" Foreground="{StaticResource MutedText}"/>
-                                        <TextBlock x:Name="LblNetProfit" Text="0" FontSize="16" FontWeight="SemiBold"
-                                                   FontFamily="Consolas" Foreground="{StaticResource AccentColor}" Margin="0,2,0,0"/>
+                                        <TextBlock x:Name="LblNetProfit" Text="0" FontSize="15" FontWeight="SemiBold"
+                                                   FontFamily="Consolas" Margin="0,2,0,0"/>
                                     </StackPanel>
                                 </Border>
                             </Grid>
@@ -702,7 +701,7 @@
                                             </Grid.ColumnDefinitions>
                                             <StackPanel Grid.Column="0">
                                                 <TextBlock Text="{Binding RoundTitle}" FontSize="11" FontWeight="SemiBold" Foreground="White"/>
-                                                <TextBlock Text="{Binding BetDetails}" FontSize="10" Foreground="{StaticResource MutedText}" Margin="0,1,0,0"/>
+                                                <TextBlock Text="{Binding BetDetails}" FontSize="10" Foreground="{StaticResource MutedText}" Margin="0,1,0,0" TextWrapping="Wrap"/>
                                             </StackPanel>
                                             <StackPanel Grid.Column="1" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="8,0,0,0">
                                                 <TextBlock Text="{Binding ProfitDeltaString}" FontSize="13" FontWeight="Bold"
