@@ -677,7 +677,7 @@
                             <Button Content="Reset Log" HorizontalAlignment="Right" Style="{StaticResource W11ButtonStyle}" Padding="6,3" Click="ResetLog_Click"/>
                         </DockPanel>
 
-                        <ListBox Grid.Row="1" x:Name="HistoryList" Background="#252525" BorderBrush="{StaticResource BorderColor}" BorderThickness="1">
+                        <ListBox Grid.Row="1" x:Name="HistoryList" Background="#252525" BorderBrush="{StaticResource BorderColor}" BorderThickness="1" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
                             <ListBox.ItemContainerStyle>
                                 <Style TargetType="ListBoxItem">
                                     <Setter Property="Background" Value="Transparent"/>
