@@ -31,6 +31,9 @@ if not defined MSBUILD_PATH (
 echo [INFO] Tim thay MSBuild tai: !MSBUILD_PATH!
 echo [INFO] Dang bat dau build project o che do Release...
 
+:: Kill running app to prevent locked files
+taskkill /f /im "Rate Calculation.exe" 2>nul
+
 :: Build project
 "!MSBUILD_PATH!" "Rate Calculation\Rate Calculation.csproj" /p:Configuration=Release /p:Platform="AnyCPU"
 

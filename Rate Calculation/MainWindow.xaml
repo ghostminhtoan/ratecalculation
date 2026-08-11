@@ -254,16 +254,21 @@
                             </DockPanel>
 
                             <StackPanel Grid.Row="1" VerticalAlignment="Center">
-                                <StackPanel Orientation="Horizontal">
-                                    <TextBlock x:Name="TxtBalance" Text="1,000" FontSize="36" FontWeight="SemiBold"
-                                               Foreground="{StaticResource AccentColor}" FontFamily="Consolas"/>
-                                    <TextBlock Text=" xu" FontSize="13" Foreground="{StaticResource MutedText}" VerticalAlignment="Bottom" Margin="4,0,0,8"/>
-                                </StackPanel>
+                                <DockPanel>
+                                    <StackPanel Orientation="Horizontal" DockPanel.Dock="Left">
+                                        <TextBlock x:Name="TxtBalance" Text="1,000" FontSize="36" FontWeight="SemiBold"
+                                                   Foreground="{StaticResource AccentColor}" FontFamily="Consolas"/>
+                                        <TextBlock Text=" xu" FontSize="13" Foreground="{StaticResource MutedText}" VerticalAlignment="Bottom" Margin="4,0,0,8"/>
+                                    </StackPanel>
+                                    <TextBlock x:Name="TxtPlayTime" Text="⏱️ 00:00:00" FontSize="14" Foreground="{StaticResource MutedText}"
+                                               FontFamily="Consolas" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,0,0,10"/>
+                                </DockPanel>
                             </StackPanel>
 
                             <Grid Grid.Row="2" Margin="0,0,0,10">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
                                     <ColumnDefinition Width="Auto"/>
                                 </Grid.ColumnDefinitions>
                                 <TextBox x:Name="InputInitBalance" Grid.Column="0" Background="#202020" Foreground="White"
@@ -271,7 +276,9 @@
                                          VerticalContentAlignment="Center" Margin="0,0,6,0"
                                          GotFocus="InputInitBalance_GotFocus"/>
                                 <Button Grid.Column="1" Content="Khởi tạo" Style="{StaticResource W11PrimaryButtonStyle}"
-                                        Width="80" Click="SetInitialBalance_Click"/>
+                                        Width="80" Margin="0,0,6,0" Click="SetInitialBalance_Click"/>
+                                <Button Grid.Column="2" Content="End (Chốt)" Style="{StaticResource W11ButtonStyle}"
+                                        Width="80" Click="EndSession_Click" Background="#443333" BorderBrush="#EF4444" Foreground="#EF4444"/>
                             </Grid>
 
                             <Grid Grid.Row="3">

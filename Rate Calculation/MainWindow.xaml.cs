@@ -62,6 +62,10 @@ namespace Rate_Calculation
         private int roundCounter = 0;
         private double currentChip = 10.0;
 
+        private System.Windows.Threading.DispatcherTimer playTimer;
+        private DateTime startTime;
+        private bool isTimerRunning = false;
+
         private readonly string sessionFilePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "session_data.txt");
 
         private readonly Dictionary<string, double> betAmounts = new Dictionary<string, double>();
@@ -80,6 +84,11 @@ namespace Rate_Calculation
                 InitializeComponent();
                 HistoryList.ItemsSource = History;
                 StreakList.ItemsSource = Streaks;
+
+                // Configure Play Timer
+                playTimer = new System.Windows.Threading.DispatcherTimer();
+                playTimer.Interval = TimeSpan.FromSeconds(1);
+                playTimer.Tick += PlayTimer_Tick;
 
                 foreach (string key in PayoutRatios.Keys)
                 {
@@ -623,6 +632,13 @@ namespace Rate_Calculation
                     roundCounter = 0;
                     InputInitBalance.Text = "";
                     ClearAllBets();
+                    
+                    // Start Timer
+                    startTime = DateTime.Now;
+                    playTimer.Start();
+                    isTimerRunning = true;
+                    TxtPlayTime.Text = "⏱️ 00:00:00";
+
                     UpdateUI();
                     SaveSession();
                     if (BorderAlert != null) BorderAlert.Visibility = Visibility.Collapsed;
@@ -637,6 +653,48 @@ namespace Rate_Calculation
             {
                 MessageBox.Show("Crash details:\n" + ex.ToString(), "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
+        }
+
+        private void PlayTimer_Tick(object sender, EventArgs e)
+        {
+            TimeSpan elapsed = DateTime.Now - startTime;
+            TxtPlayTime.Text = string.Format("⏱️ {0:00}:{1:00}:{2:00}", elapsed.Hours, elapsed.Minutes, elapsed.Seconds);
+        }
+
+        private void EndSession_Click(object sender, RoutedEventArgs e)
+        {
+            if (!isTimerRunning)
+            {
+                ShowAlert("⚠️ Chưa khởi tạo phiên chơi để tính giờ!", "info");
+                return;
+            }
+
+            playTimer.Stop();
+            isTimerRunning = false;
+
+            TimeSpan elapsed = DateTime.Now - startTime;
+            double netProfit = Math.Round(currentBalance - initialBalance, 2);
+            string profitSign = netProfit >= 0 ? "+" : "";
+
+            // History Log Item
+            HistoryItem chotDon = new HistoryItem();
+            chotDon.RoundTitle = "🏁 --- CHỐT PHIÊN (End) ---";
+            chotDon.BetDetails = string.Format("Thời gian: {0:00}p {1:00}s | Số ván: {2}", Math.Floor(elapsed.TotalMinutes), elapsed.Seconds, roundCounter);
+            chotDon.ProfitDeltaString = profitSign + netProfit.ToString("#,##0.##");
+            chotDon.BalanceString = string.Format("Dư: {0:#,##0.##}", currentBalance);
+            chotDon.ProfitBrush = netProfit >= 0 ? new SolidColorBrush(Color.FromRgb(34, 197, 94)) : new SolidColorBrush(Color.FromRgb(239, 68, 68));
+            History.Insert(0, chotDon);
+
+            // Audio effects
+            PlaySound(1500, 150);
+            System.Threading.Tasks.Task.Delay(150).ContinueWith(_ => PlaySound(1800, 250));
+
+            ShowAlert(string.Format("🏁 Chốt phiên! Lợi nhuận: {0}{1:#,##0.##} xu", profitSign, netProfit), netProfit >= 0 ? "win" : "lose");
+
+            // Reset Initial Balance to Current Balance for new cycle
+            initialBalance = currentBalance;
+            UpdateUI();
+            SaveSession();
         }
 
         private void ResetSession_Click(object sender, RoutedEventArgs e)
