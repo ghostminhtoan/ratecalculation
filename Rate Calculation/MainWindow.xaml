@@ -225,15 +225,19 @@
                 <TextBlock Text="🎲 Harvard Sic Bo Laboratory" FontSize="18" FontWeight="SemiBold"/>
                 <TextBlock Text="Win / Loss Combination Simulator for Study Purpose" FontSize="10" Foreground="{StaticResource MutedText}" Margin="0,2,0,0"/>
             </StackPanel>
-            <Border Background="#2B2B2B" BorderBrush="{StaticResource BorderColor}" BorderThickness="1" CornerRadius="4"
-                    Padding="8,4" HorizontalAlignment="Right" VerticalAlignment="Center">
-                <TextBlock Text="WPF Responsive Layout" Foreground="{StaticResource AccentColor}" FontSize="10"/>
-            </Border>
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
+                <CheckBox x:Name="ChkTwoColumn" Content="Always 2 Columns" Foreground="White" FontSize="11" 
+                          VerticalAlignment="Center" Margin="0,0,12,0" Checked="ChkTwoColumn_Changed" Unchecked="ChkTwoColumn_Changed"/>
+                <Border Background="#2B2B2B" BorderBrush="{StaticResource BorderColor}" BorderThickness="1" CornerRadius="4"
+                        Padding="8,4">
+                    <TextBlock Text="WPF Responsive Layout" Foreground="{StaticResource AccentColor}" FontSize="10"/>
+                </Border>
+            </StackPanel>
         </Grid>
 
         <!-- Main content -->
-        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
-            <WrapPanel Orientation="Horizontal" HorizontalAlignment="Center">
+        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
+            <WrapPanel x:Name="MainWrapPanel" Orientation="Horizontal" HorizontalAlignment="Center">
 
                 <!-- Left Column: contains Panel 1 and Panel 2 stacked vertically -->
                 <StackPanel Orientation="Vertical" Width="402">

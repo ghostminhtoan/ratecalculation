@@ -129,6 +129,16 @@ namespace Rate_Calculation
                         if (double.TryParse(lines[1].Trim(), NumberStyles.Any, CultureInfo.InvariantCulture, out curr))
                             currentBalance = curr;
                     }
+                    if (lines.Length >= 3)
+                    {
+                        bool isTwoCol;
+                        if (bool.TryParse(lines[2].Trim(), out isTwoCol))
+                        {
+                            ChkTwoColumn.IsChecked = isTwoCol;
+                            if (MainWrapPanel != null)
+                                MainWrapPanel.MinWidth = isTwoCol ? 810 : 0;
+                        }
+                    }
                 }
             }
             catch { }
@@ -140,7 +150,8 @@ namespace Rate_Calculation
             {
                 File.WriteAllLines(sessionFilePath, new string[] {
                     initialBalance.ToString(CultureInfo.InvariantCulture),
-                    currentBalance.ToString(CultureInfo.InvariantCulture)
+                    currentBalance.ToString(CultureInfo.InvariantCulture),
+                    (ChkTwoColumn != null && ChkTwoColumn.IsChecked == true).ToString()
                 });
             }
             catch { }
@@ -858,6 +869,14 @@ namespace Rate_Calculation
                 PlaySound(1200, 30);
                 UpdateUI();
             }
+        }
+
+        private void ChkTwoColumn_Changed(object sender, RoutedEventArgs e)
+        {
+            if (MainWrapPanel == null || ChkTwoColumn == null) return;
+            bool isTwoCol = ChkTwoColumn.IsChecked == true;
+            MainWrapPanel.MinWidth = isTwoCol ? 810 : 0;
+            SaveSession();
         }
     }
 
